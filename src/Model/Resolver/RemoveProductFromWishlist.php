@@ -50,7 +50,7 @@ class RemoveProductFromWishlist implements ResolverInterface
      * AddWishlistForCustomer constructor.
      * @param CustomerRepositoryInterface $customerRepository
      * @param WishlistFactory $wishlistFactory
-     * @param WishlistItemFactory $wishlistItemFactory
+     * @param ItemFactory $wishlistItemFactory
      */
     public function __construct(
         CustomerRepositoryInterface $customerRepository,

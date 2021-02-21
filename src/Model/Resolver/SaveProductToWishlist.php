@@ -96,6 +96,17 @@ class SaveProductToWishlist implements ResolverInterface
         throw new GraphQlInputException(__('Please specify either sku or item_id'));
     }
 
+    /**
+     * MediaGalleryEntries constructor.
+     * @param Wishlist $wishlist
+     * @param string $sku
+     * @param array $parameters
+     * @return array
+     * @throws GraphQlInputException
+     * @throws GraphQlNoSuchEntityException
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
+     */
     protected function addProductToWishlist(Wishlist $wishlist, string $sku, array $parameters)
     {
         $quantity = $parameters['quantity'] ?? 1;
@@ -140,6 +151,14 @@ class SaveProductToWishlist implements ResolverInterface
         );
     }
 
+    /**
+     * @param Wishlist $wishlist
+     * @param string $itemId
+     * @param array $parameters
+     * @return array
+     * @throws GraphQlInputException
+     * @throws GraphQlNoSuchEntityException
+     */
     protected function updateWishlistItem(Wishlist $wishlist, string $itemId, array $parameters)
     {
         if (!(array_key_exists('quantity', $parameters) || array_key_exists('description', $parameters))) {
@@ -167,7 +186,7 @@ class SaveProductToWishlist implements ResolverInterface
         try {
             $item->save();
             $wishlist->save();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             throw new GraphQlNoSuchEntityException(__('There was an error when trying to update wishlist item'));
         }
 

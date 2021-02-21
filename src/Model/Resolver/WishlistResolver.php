@@ -78,6 +78,12 @@ class WishlistResolver implements ResolverInterface
         ];
     }
 
+    /**
+     * @param Wishlist $wishlist
+     * @param $sharingCode
+     * @param $context
+     * @throws GraphQlNoSuchEntityException
+     */
     public function loadWishlist(Wishlist $wishlist, $sharingCode, $context): void
     {
         if (!$sharingCode) {

@@ -25,6 +25,10 @@ use Magento\Wishlist\Model\ResourceModel\Wishlist as WishlistResourceModel;
 use Magento\Wishlist\Model\Wishlist;
 use Magento\Wishlist\Model\WishlistFactory;
 
+/**
+ * Class ClearWishlist
+ * @package ScandiPWA\WishlistGraphQl\Model\Resolver
+ */
 class ClearWishlist implements ResolverInterface
 {
     /**
@@ -62,7 +66,7 @@ class ClearWishlist implements ResolverInterface
 
         /** @var Wishlist $wishlist */
         $wishlist = $this->wishlistFactory->create();
-        $this->wishlistResource->load($wishlist, $customerId, 'customer_id');
+        $wishlistResource = $this->wishlistResource->load($wishlist, $customerId, 'customer_id');
 
         if (!$wishlist->getId() || $wishlist->getItemsCount() <= 0) {
             return true;
@@ -74,7 +78,7 @@ class ClearWishlist implements ResolverInterface
         }
 
         try {
-            $wishlist->save();
+            $wishlistResource->save($wishlist);
         } catch (Exception $e) {
             throw new GraphQlNoSuchEntityException(__('There was an error when clearing wishlist'));
         }

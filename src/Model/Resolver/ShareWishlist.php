@@ -16,8 +16,10 @@ namespace ScandiPWA\WishlistGraphQl\Model\Resolver;
 
 use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Customer\Model\ResourceModel\CustomerRepository;
+use Magento\Framework\App\Area;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Escaper;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\GraphQl\Config\Element\Field;
 use Magento\Framework\GraphQl\Exception\GraphQlAuthorizationException;
 use Magento\Framework\GraphQl\Exception\GraphQlInputException;
@@ -25,11 +27,16 @@ use Magento\Framework\GraphQl\Query\ResolverInterface;
 use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
 use Magento\Framework\Mail\Template\TransportBuilder;
 use Magento\Framework\UrlInterface;
+use Magento\Framework\Validator\EmailAddress;
 use Magento\Framework\View\LayoutFactory;
+use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Wishlist\Model\WishlistFactory;
-use ScandiPWA\WishlistGraphQl\Model\Resolver\WishlistResolver;
 
+/**
+ * Class ShareWishlist
+ * @package ScandiPWA\WishlistGraphQl\Model\Resolver
+ */
 class ShareWishlist implements ResolverInterface
 {
     /**
@@ -141,22 +148,22 @@ class ShareWishlist implements ResolverInterface
             foreach ($emails as $email) {
                 $email = trim($email);
 
-                if (in_array($email, $sentEmails)) {
+                if (in_array($email, $sentEmails, true)) {
                     continue;
                 }
 
-                if (!\Zend_Validate::is($email, \Magento\Framework\Validator\EmailAddress::class)) {
+                if (!\Zend_Validate::is($email, EmailAddress::class)) {
                     throw new GraphQlInputException(__('Provided emails are not valid'));
                 }
 
                 $transport = $this->transportBuilder->setTemplateIdentifier(
                     $this->scopeConfig->getValue(
                         'wishlist/email/email_template',
-                        \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+                        ScopeInterface::SCOPE_STORE
                     )
                 )->setTemplateOptions(
                     [
-                        'area' => \Magento\Framework\App\Area::AREA_FRONTEND,
+                        'area' => Area::AREA_FRONTEND,
                         'store' => $this->storeManager->getStore()->getStoreId(),
                     ]
                 )->setTemplateVars(
@@ -174,7 +181,7 @@ class ShareWishlist implements ResolverInterface
                         'name' => $customerName,
                         'email' => $customer->getEmail(),
                     ],
-                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+                    ScopeInterface::SCOPE_STORE
                 )->addTo(
                     $email
                 )->getTransport();
@@ -200,6 +207,7 @@ class ShareWishlist implements ResolverInterface
      * Retrieve wishlist items content (html)
      *
      * @return string
+     * @throws LocalizedException
      */
     protected function getWishlistItems()
     {
@@ -217,6 +225,6 @@ class ShareWishlist implements ResolverInterface
     protected function getWebsiteLink(string $sharingCode): string
     {
         $baseUrl = $this->url->getBaseUrl();
-        return $baseUrl . "wishlist/shared/$sharingCode";
+        return $baseUrl . "wishlist/shared/". $sharingCode;
     }
 }

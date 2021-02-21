@@ -9,7 +9,7 @@ This endpoint allows to save Wishlist item
 
 ```graphql
 mutation SaveWishlistItem($wishlistItem: WishlistItemInput!) {
-    saveWishlistItem(wishlistItem: $wishlistItem) {
+    s_saveWishlistItem(wishlistItem: $wishlistItem) {
          id
          sku
          qty
@@ -40,7 +40,7 @@ This endpoint allows removing item from wishlist
 
 ```graphql
 mutation RemoveProductFromWishlist($item_id: ID!) {
-    removeProductFromWishlist(item_id: $item_id)
+    s_removeProductFromWishlist(item_id: $item_id)
 }
 ```
 
@@ -56,7 +56,7 @@ This endpoint allows to move all wishlist items to cart
 
 ```graphql
 mutation MoveWishlistToCart {
-    moveWishlistToCart()
+    s_moveWishlistToCart()
 }
 ```
 
@@ -66,6 +66,6 @@ This endpoint allows to clear wishlist
 
 ```graphql
 mutation ClearWishlist {
-    clearWishlist()
+    s_clearWishlist()
 }
 ```

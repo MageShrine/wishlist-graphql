@@ -122,7 +122,6 @@ class WishlistItemsResolver implements ResolverInterface
         $wishlistItems = $this->getWishListItems($wishlist);
         $itemProductIds = [];
 
-        /** @var Item $item */
         foreach ($wishlistItems as $item) {
             $itemProductIds[$item->getId()] = $item->getProductId();
         }
@@ -163,7 +162,6 @@ class WishlistItemsResolver implements ResolverInterface
         array $itemProductIds,
         ResolveInfo $info
     ) {
-        /** @var Collection $collection */
         $collection = $this->collectionFactory->create();
         $collection->addIdFilter(array_values($itemProductIds));
 
@@ -195,7 +193,7 @@ class WishlistItemsResolver implements ResolverInterface
         $collection = $this->wishlistItemsFactory->create();
         $collection
             ->addWishlistFilter($wishlist)
-            ->addStoreFilter(array_map(function (StoreInterface $store) {
+            ->addStoreFilter(array_map(static function (StoreInterface $store) {
                 return $store->getId();
             }, $this->storeManager->getStores()))
             ->setVisibilityFilter();

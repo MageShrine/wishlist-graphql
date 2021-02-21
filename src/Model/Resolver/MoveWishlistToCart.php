@@ -17,6 +17,7 @@ namespace ScandiPWA\WishlistGraphQl\Model\Resolver;
 
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\Framework\DataObject;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\GraphQl\Config\Element\Field;
 use Magento\Framework\GraphQl\Exception\GraphQlAuthorizationException;
 use Magento\Framework\GraphQl\Exception\GraphQlNoSuchEntityException;
@@ -30,7 +31,12 @@ use Magento\Quote\Model\Webapi\ParamOverriderCartId;
 use Magento\Wishlist\Model\ResourceModel\Wishlist as WishlistResourceModel;
 use Magento\Wishlist\Model\Wishlist;
 use Magento\Wishlist\Model\WishlistFactory;
+use Exception;
 
+/**
+ * Class MoveWishlistToCart
+ * @package ScandiPWA\WishlistGraphQl\Model\Resolver
+ */
 class MoveWishlistToCart implements ResolverInterface
 {
 
@@ -84,7 +90,11 @@ class MoveWishlistToCart implements ResolverInterface
      * Adds new items from wishlist to cart
      *
      * @param array $wishlistItems
+     * @param CartInterface $quote
      * @return void
+     * @throws GraphQlNoSuchEntityException
+     * @throws GraphQlNoSuchEntityException
+     * @throws GraphQlNoSuchEntityException
      */
     protected function addItemsToCart(array $wishlistItems, CartInterface $quote): void
     {
@@ -114,7 +124,9 @@ class MoveWishlistToCart implements ResolverInterface
      * Prepares array with wishlist data
      *
      * @param Wishlist $wishlist
+     * @param bool $shouldDeleteItems
      * @return array
+     * @throws NoSuchEntityException
      */
     protected function getWishlistItems(Wishlist $wishlist, bool $shouldDeleteItems): array
     {
@@ -171,7 +183,7 @@ class MoveWishlistToCart implements ResolverInterface
             return true;
         }
 
-        $wishlistItems = $this->getWishlistItems($wishlist, !!$sharingCode);
+        $wishlistItems = $this->getWishlistItems($wishlist, (bool)$sharingCode);
         $cartItems = $cart->getItems();
 
         foreach ($cartItems as $item) {
@@ -191,7 +203,7 @@ class MoveWishlistToCart implements ResolverInterface
         $this->addItemsToCart($wishlistItems, $cart);
 
         try {
-            $wishlist->save();
+            $this->wishlistResource->save($wishlist);
             $cart->save();
         } catch (Exception $e) {
             throw new GraphQlNoSuchEntityException(__('There was an error when trying to save wishlist items to cart'));
@@ -200,6 +212,13 @@ class MoveWishlistToCart implements ResolverInterface
         return true;
     }
 
+    /**
+     * MediaGalleryEntries constructor.
+     * @param Wishlist $wishlist
+     * @param $sharingCode
+     * @param $context
+     * @throws GraphQlNoSuchEntityException
+     */
     private function loadWishlist(Wishlist $wishlist, $sharingCode, $context): void
     {
         if (!$sharingCode) {

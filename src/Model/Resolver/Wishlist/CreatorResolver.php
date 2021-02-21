@@ -21,6 +21,10 @@ use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
 use Magento\Framework\GraphQl\Query\ResolverInterface;
 use Magento\Customer\Model\ResourceModel\CustomerRepository;
 
+/**
+ * Class CreatorResolver
+ * @package ScandiPWA\WishlistGraphQl\Model\Resolver\Wishlist
+ */
 class CreatorResolver implements ResolverInterface
 {
     /**
@@ -52,14 +56,11 @@ class CreatorResolver implements ResolverInterface
         }
 
         $customerId = $wishlist->getCustomerId();
-        /** @var CustomerInterface $customer */
         $customer = $this->customerRepository->getById($customerId);
 
         $firstName = $customer->getFirstname();
         $lastName = $customer->getLastname();
 
-        $creatorsName = "$firstName $lastName";
-
-        return $creatorsName;
+        return "$firstName $lastName";
     }
 }
